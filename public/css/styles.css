@@ -1,0 +1,64 @@
+#result {
+    border-collapse: collapse;
+    margin: 15px 0;   
+}
+
+#result tbody td:hover, #result thead th {
+    cursor: pointer;
+}
+
+#result tbody tr:hover {
+    background-color: #ccc;
+}
+
+td.date, td.time {
+    text-align: center;
+}
+
+#result thead input[type="text"] {
+    width: 100%; 
+    box-sizing: border-box;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing: border-box;
+}
+
+/*a {
+    float: right;
+}*/
+
+html {
+    height:100%;
+}
+
+body.login {
+    display: flex;
+    height:100%;
+}
+
+div.container {
+    display:flex;
+    flex-direction: column;
+    clear: both;
+    padding: 15px 0;
+}
+
+div.container div {
+    margin: auto;
+}
+
+div.search {
+    display: flex;
+}
+
+body.login form {
+    margin: auto;
+}
+
+body.login form div {
+    display: flex;
+    flex-direction: column;
+}
+
+body.login input {
+    margin: 8px 0;
+}
