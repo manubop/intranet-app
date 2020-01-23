@@ -3,3 +3,6 @@
 config/credentials.json
 config/redis.json
 node_modules
+var/
+start.sh
+stop.sh
