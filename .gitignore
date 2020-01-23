@@ -1,4 +1,5 @@
 .vscode
 *.log
-config
+config/credentials.json
+config/redis.json
 node_modules
