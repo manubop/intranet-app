@@ -1,6 +1,6 @@
 {
   "name": "intranet-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "app.js",
   "scripts": {
@@ -10,17 +10,17 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cookie-parser": "^1.4.4",
+    "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "intranet": "git+ssh://git@github.com/manubop/intranet.git",
     "jsonwebtoken": "^8.5.1",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.5",
     "redis": "^2.8.0"
   },
   "devDependencies": {
-    "eslint": "^6.6.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.18.2",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1"

@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello World! Site Title</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="css/styles.css">
@@ -11,47 +12,53 @@
   </head>
   <body>
     <div class="w3-bar w3-border w3-light-grey">
-      <a href="#" class="w3-bar-item w3-button nav" did="home">Home</a>
-      <a href="#" class="w3-bar-item w3-button nav" did="admin" disabled>Admin</a>
-      <a href="/logout" class="w3-bar-item w3-button w3-black w3-right">Logout</a>
+      <a href="#" class="w3-bar-item w3-button w3-mobile nav" did="home">Home</a>
+      <a href="#" class="w3-bar-item w3-button w3-mobile nav" did="admin" disabled>Admin</a>
+      <a href="/logout" class="w3-bar-item w3-button w3-mobile w3-right">Logout</a>
     </div>
-    <div class="container tab" id="home">
-      <div class="search">
-        <select id="nivol">
-          <!-- <option value="00000957819G">BEAUPIED</option> -->
-        </select>
-        <input type="text" id="debut" value="2019-01-01" class="datepicker">
-        <input type="text" id="fin" value="2019-12-31" class="datepicker">
-        <!-- <input type="date" id="debut" value="2019-10-01">
-        <input type="date" id="fin" value="2019-10-31"> -->
-        <!-- <button id="fetch">Fetch</button> -->
+    <div class="w3-container tab" id="home">
+      <div class="w3-row-padding">
+        <div class="w3-third">
+          <select class="w3-input" id="nivol"></select>
+        </div>
+        <div class="w3-third">
+          <input class="w3-input datepicker" type="text" id="debut" value="2019-01-01">
+        </div>
+        <div class="w3-third">
+          <input class="w3-input datepicker" type="text" id="fin" value="2019-12-31">
+        </div>
+      </div>
+      <div class="w3-center w3-margin-top">
         <a href="#" class="w3-button w3-green" id="fetch">Fetch</a>
       </div>
-      <div>
-        <table id="result">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Début</th>
-              <th>Durée</th>
-              <th>Type</th>
-              <th>Nom</th>
-              <th>Structure</th>
-            </tr>
-            <tr>
-              <td><input type="text"></td>
-              <td><input type="text"></td>
-              <td><input type="text"></td>
-              <td><input type="text"></td>
-              <td><input type="text"></td>
-              <td><input type="text"></td>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div id="info"></div>
     </div>
+    <div class="w3-container w3-responsive">
+      <table class="w3-table" id="result">
+        <thead>
+          <tr>
+            <th class="w3-center">Date</th>
+            <th class="w3-center w3-hide-small w3-hide-medium">Début</th>
+            <th class="w3-center w3-hide-small w3-hide-medium">Durée</th>
+            <th class="w3-hide-small">Type</th>
+            <th>Nom</th>
+            <th class="w3-hide-small">Structure</th>
+          </tr>
+          <tr>
+            <!-- <td><input type="text"></td> -->
+            <td></td>
+            <!-- <td class="w3-hide-small w3-hide-medium"><input type="text"></td> -->
+            <td class="w3-hide-small w3-hide-medium"></td>
+            <!-- <td class="w3-hide-small w3-hide-medium"><input type="text"></td> -->
+            <td class="w3-hide-small w3-hide-medium"></td>
+            <td class="w3-hide-small"><input class="w3-input w3-border" type="text"></td>
+            <td><input class="w3-input w3-border" type="text"></td>
+            <td class="w3-hide-small"><input class="w3-input w3-border" type="text"></td>
+          </tr>
+        </thead>
+        <tbody class="no-select"></tbody>
+      </table>
+    </div>
+    <div id="info"></div>
     <div class="container tab" id="admin" style="display:none"></div>
   </body>
 </html>

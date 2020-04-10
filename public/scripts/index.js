@@ -57,11 +57,11 @@ async function utilisateur () {
             const line = $('<tr>');
             table.append(line.click(seance).attr('seance', item.seance.id).append(
                 $('<td class="date">').attr('date', debut.toISOString()).text(debut.toLocaleDateString('fr-FR')),
-                $('<td class="time">').text(debut.toLocaleTimeString('fr-FR', HOUR_FORMAT)),
-                $('<td class="time">').text(padInt(heures) + ':' + padInt(minutes)),
+                $('<td class="w3-hide-small w3-hide-medium time">').text(debut.toLocaleTimeString('fr-FR', HOUR_FORMAT)),
+                $('<td class="w3-hide-small w3-hide-medium time">').text(padInt(heures) + ':' + padInt(minutes)),
+                $('<td class="w3-hide-small">'),
                 $('<td>'),
-                $('<td>'),
-                $('<td>')
+                $('<td class="w3-hide-small">')
             ));
             fetchRest('/rest/activite/' + item.activite.id)
                 .then(act => {
@@ -181,4 +181,9 @@ $(document).ready(() => {
         selectOtherMonths: true,
         dateFormat: 'yy-mm-dd'
     });
+    const date = new Date();
+    $('#debut').val(date.getFullYear() + '-' + padInt(date.getMonth() + 1) + '-01');
+    date.setMonth(date.getMonth() + 1);
+    date.setDate(0);
+    $('#fin').val(date.getFullYear() + '-' + padInt(date.getMonth() + 1) + '-' + date.getDate());
 });

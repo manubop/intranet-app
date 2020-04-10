@@ -9,12 +9,12 @@ const session = new intranet.IntranetSession(credentials.url, credentials.user, 
 const router = express.Router();
 
 router.get('/utilisateur/:nivol', auth(), (req, res) => {
-    const { debut, fin } = req.query;
-    const { nivol } = req.params;
     db.getCachedResponse(req.url).then(data => {
         if (data) {
             res.send(data);
         } else {
+            const { debut, fin } = req.query;
+            const { nivol } = req.params;
             session.get('/crf/rest/utilisateur/' + nivol + '/inscription?debut=' + debut + '&fin=' + fin).then(data => {
                 res.send(data.body);
                 db.setCachedResponse(req.url, data.body, 1000 * 60);
@@ -24,11 +24,11 @@ router.get('/utilisateur/:nivol', auth(), (req, res) => {
 });
 
 router.get('/activite/:id', auth(), (req, res) => {
-    const { id } = req.params;
     db.getCachedResponse(req.url).then(data => {
         if (data) {
             res.send(data);
         } else {
+            const { id } = req.params;
             session.get('/crf/rest/activite/' + id).then(data => {
                 res.send(data.body);
                 db.setCachedResponse(req.url, data.body, 1000 * 60);
@@ -81,18 +81,25 @@ router.get('/benevoles/:structure', auth(), (req, res) => {
 });
 
 router.get('/seance/:id', auth(), (req, res) => {
-    const { id } = req.params;
-    session.get('/crf/rest/seance/' + id + '/inscription').then(data => {
-        res.send(data.body);
-    });
-});
-
-router.get('/structure/:id', auth(), (req, res) => {
-    const { id } = req.params;
     db.getCachedResponse(req.url).then(data => {
         if (data) {
             res.send(data);
         } else {
+            const { id } = req.params;
+            session.get('/crf/rest/seance/' + id + '/inscription').then(data => {
+                res.send(data.body);
+                db.setCachedResponse(req.url, data.body, 1000 * 60);
+            });
+        }
+    });
+});
+
+router.get('/structure/:id', auth(), (req, res) => {
+    db.getCachedResponse(req.url).then(data => {
+        if (data) {
+            res.send(data);
+        } else {
+            const { id } = req.params;
             session.get('/crf/rest/structure/' + id).then(data => {
                 res.send(data.body);
                 db.setCachedResponse(req.url, data.body, 1000 * 60);
