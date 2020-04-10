@@ -31,31 +31,31 @@
       <div class="w3-center w3-margin-top">
         <a href="#" class="w3-button w3-green" id="fetch">Fetch</a>
       </div>
+      <div class="w3-container w3-responsive">
+        <table class="w3-table" id="result">
+          <thead>
+            <tr>
+              <th class="w3-center">Date</th>
+              <th class="w3-center w3-hide-small w3-hide-medium">Début</th>
+              <th class="w3-center w3-hide-small w3-hide-medium">Durée</th>
+              <th class="w3-hide-small">Type</th>
+              <th>Nom</th>
+              <th class="w3-hide-small">Structure</th>
+            </tr>
+            <tr>
+              <td><input class="w3-input w3-border" type="text"></td>
+              <td class="w3-hide-small w3-hide-medium"><input class="w3-input w3-border" type="text"></td>
+              <td class="w3-hide-small w3-hide-medium"><input class="w3-input w3-border" type="text"></td>
+              <td class="w3-hide-small"><input class="w3-input w3-border" type="text"></td>
+              <td><input class="w3-input w3-border" type="text"></td>
+              <td class="w3-hide-small"><input class="w3-input w3-border" type="text"></td>
+            </tr>
+          </thead>
+          <tbody class="no-select"></tbody>
+        </table>
+      </div>
+      <div id="info"></div>
     </div>
-    <div class="w3-container w3-responsive">
-      <table class="w3-table" id="result">
-        <thead>
-          <tr>
-            <th class="w3-center">Date</th>
-            <th class="w3-center w3-hide-small w3-hide-medium">Début</th>
-            <th class="w3-center w3-hide-small w3-hide-medium">Durée</th>
-            <th class="w3-hide-small">Type</th>
-            <th>Nom</th>
-            <th class="w3-hide-small">Structure</th>
-          </tr>
-          <tr>
-            <td><input class="w3-input w3-border" type="text"></td>
-            <td class="w3-hide-small w3-hide-medium"><input class="w3-input w3-border" type="text"></td>
-            <td class="w3-hide-small w3-hide-medium"><input class="w3-input w3-border" type="text"></td>
-            <td class="w3-hide-small"><input class="w3-input w3-border" type="text"></td>
-            <td><input class="w3-input w3-border" type="text"></td>
-            <td class="w3-hide-small"><input class="w3-input w3-border" type="text"></td>
-          </tr>
-        </thead>
-        <tbody class="no-select"></tbody>
-      </table>
-    </div>
-    <div id="info"></div>
-    <div class="container tab" id="admin" style="display:none"></div>
+    <div class="w3-container tab" id="admin" style="display:none"></div>
   </body>
 </html>
