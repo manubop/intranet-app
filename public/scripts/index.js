@@ -41,6 +41,7 @@ async function utilisateur () {
     const nivol = $('#nivol').val();
     const debut = new Date($('#debut').val());
     const fin = new Date($('#fin').val());
+    fin.setDate(fin.getDate() + 1);
     try {
         const data = await fetchRest('/rest/utilisateur/' + nivol + '?debut=' + debut.toISOString() + '&fin=' + fin.toISOString());
         // Work with JSON data here
