@@ -1,6 +1,26 @@
+#mySidebar {
+    width: 240px
+}
+
+.with-sidebar {
+    margin-left: 240px;
+}
+
 #result {
     border-collapse: collapse;
-    margin: 15px 0;   
+    margin: 15px 0;
+}
+
+#result td {
+    max-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#result td:first-child, 
+#result th:first-child {
+    padding-left: 8px !important;
 }
 
 #result tbody td:hover, #result thead th {
@@ -11,8 +31,8 @@
     background-color: #ccc;
 }
 
-td.date, td.time {
-    text-align: center;
+#result td.date, td.time {
+    text-align: center !important;
 }
 
 #result thead input[type="text"] {
@@ -22,41 +42,42 @@ td.date, td.time {
     -moz-box-sizing: border-box;
 }
 
-html {
-    height:100%;
+#result th:nth-child(1) {
+    width: 10%;
 }
 
-body.login {
-    display: flex;
-    height:100%;
+#result th:nth-child(2) {
+    width: 5%;
 }
 
-div.container {
-    display:flex;
-    flex-direction: column;
-    clear: both;
-    padding: 15px 0;
+#result th:nth-child(3) {
+    width: 5%;
 }
 
-div.container div {
-    margin: auto;
+#result th:nth-child(4) {
+    width: 20%;
 }
 
-div.search {
-    display: flex;
+#result th:nth-child(5) {
+    width: 40%;
 }
 
-body.login form {
-    margin: auto;
-}
-
-body.login form div {
+form.login {
     display: flex;
     flex-direction: column;
 }
 
-body.login input {
+form.login input {
     margin: 8px 0;
+}
+
+.center-on-screen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 
 .no-select {
@@ -64,4 +85,55 @@ body.login input {
     -moz-user-select: none; /* Firefox 2+ */
     -ms-user-select: none; /* IE 10+ */
     user-select: none; /* Standard syntax */
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    max-height: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.info-head,
+.close {
+    font-size: 35px;
+    font-weight: bold;
+    min-height: 52px;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+    cursor: pointer;
+}
+
+#infoContent {
+    overflow: auto;
+}
+
+@media screen and (max-width: 601px) {
+
+    .with-sidebar {
+        margin-left: 0px;
+    }
+
+    #result th:nth-child(1) {
+        width: 20%;
+    }
+
+    #result th:nth-child(2) {
+        width: 80%;
+    }
+
+    .modal-content {
+        margin: auto;
+        width: 80%;
+        height: 80%;
+    }    
 }

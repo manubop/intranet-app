@@ -29,7 +29,8 @@ function seance () {
     const id = $(this).attr('seance');
     fetchRest('/rest/seance/' + id)
         .then(data => {
-            $('#info').text(JSON.stringify(data));
+            $('#infoContent').text(JSON.stringify(data));
+            $('#info').show();
         })
         .catch(err => {
             console.error(err);
@@ -44,8 +45,6 @@ async function utilisateur () {
     fin.setDate(fin.getDate() + 1);
     try {
         const data = await fetchRest('/rest/utilisateur/' + nivol + '?debut=' + debut.toISOString() + '&fin=' + fin.toISOString());
-        // Work with JSON data here
-        console.log(data);
         const table = $('#result tbody');
         table.children('tr').remove();
         data.sort((first, second) => first.debut.localeCompare(second.debut));
@@ -163,16 +162,69 @@ function loadAdmin () {
 };
 
 function navigate () {
-    if ($(this).attr('href')) {
-        const did = $(this).attr('did');
-        $('div.tab').hide();
-        $('div.tab#' + did).show();
+    const t = $(this);
+    if (t.attr('href')) {
+        const did = t.attr('did');
+        $('div.tab').addClass('w3-hide');
+        $('div.tab#' + did).removeClass('w3-hide');
     }
 };
+
+function toggleSidebar (sidebar, main) {
+    if (sidebar.hasClass('w3-hide')) {
+        main.addClass('with-sidebar');
+        sidebar.removeClass('w3-hide');
+    } else {
+        main.removeClass('with-sidebar');
+        sidebar.addClass('w3-hide');
+    }
+};
+
+function copyElementContents (el) {
+    const range = document.createRange();
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    try {
+        range.selectNodeContents(el);
+        sel.addRange(range);
+    } catch (e) {
+        range.selectNode(el);
+        sel.addRange(range);
+    }
+    document.execCommand('Copy');
+    sel.removeAllRanges();
+};
+
+/*
+function copyTable () {
+    const tableBody = $('#result tbody').get(0);
+    copyElementContents(tableBody);
+    navigator.clipboard.writeText("newClip").then(() => {
+        console.log("success !");
+    }).catch(() => {
+        console.log("failure !");
+    })
+};
+*/
+
+function toggleSearchBarItem (x, i) {
+    if (!x.hasClass('w3-show')) {
+        x.addClass('w3-show');
+        x.prev().addClass('w3-green');
+        i.removeClass('fa-caret-down');
+        i.addClass('fa-caret-up');
+    } else {
+        x.removeClass('w3-show');
+        x.prev().removeClass('w3-green');
+        i.removeClass('fa-caret-up');
+        i.addClass('fa-caret-down');
+    }
+}
 
 $(document).ready(() => {
     loadBenevoles();
     loadAdmin();
+
     $('#fetch').click(utilisateur);
     $('#result thead input').keyup(filterTable);
     $('#result thead th').click(sortTable);
@@ -182,9 +234,27 @@ $(document).ready(() => {
         selectOtherMonths: true,
         dateFormat: 'yy-mm-dd'
     });
+
     const date = new Date();
     $('#debut').val(date.getFullYear() + '-' + padInt(date.getMonth() + 1) + '-01');
     date.setMonth(date.getMonth() + 1);
     date.setDate(0);
     $('#fin').val(date.getFullYear() + '-' + padInt(date.getMonth() + 1) + '-' + date.getDate());
+
+    const info = $('#info');
+    const infoButton = $('#closeInfo');
+    info.click(() => info.hide());
+    infoButton.click(() => info.hide());
+
+    const sidebar = $('#mySidebar');
+    const main = $('#main');
+    $('#toggleSidebar').click(toggleSidebar.bind(null, sidebar, main));
+    $('#closeSidebar').click(toggleSidebar.bind(null, sidebar, main));
+
+    const tableBody = $('#result tbody').get(0);
+    $('#copyTable').click(copyElementContents.bind(null, tableBody));
+
+    const x = $('#searchAccordion');
+    const i = $('#searchBarItem i');
+    $('#searchBarItem').click(toggleSearchBarItem.bind(null, x, i));
 });

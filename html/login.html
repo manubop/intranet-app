@@ -4,14 +4,17 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="login">
-    <form method='POST'>
-        <div>
-            <label for="name">Name</label>
-            <input type="text" name="name">
-            <label for="password">Password</label>
-            <input type="password" name="password">
-            <input type="submit">
+<body>
+    <div class="w3-card center-on-screen">
+        <div class="w3-container w3-blue">
+            <h2>Welcome</h2>
         </div>
-    </form>
+        <form class="w3-container w3-padding-16 login" method='POST'>
+            <label for="name">Name</label>
+            <input class="w3-input w3-border" type="text" name="name">
+            <label for="password">Password</label>
+            <input class="w3-input w3-border" type="password" name="password">
+            <input type="submit" value="login">
+        </form>
+    </div>
 </body>
