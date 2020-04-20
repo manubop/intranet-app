@@ -18,6 +18,8 @@ router.get('/utilisateur/:nivol', auth(), (req, res) => {
             session.get('/crf/rest/utilisateur/' + nivol + '/inscription?debut=' + debut + '&fin=' + fin).then(data => {
                 res.send(data.body);
                 db.setCachedResponse(req.url, data.body, 1000 * 60);
+            }).catch(err => {
+                console.error(err);
             });
         }
     });
@@ -32,6 +34,8 @@ router.get('/activite/:id', auth(), (req, res) => {
             session.get('/crf/rest/activite/' + id).then(data => {
                 res.send(data.body);
                 db.setCachedResponse(req.url, data.body, 1000 * 60);
+            }).catch(err => {
+                console.error(err);
             });
         }
     });
@@ -89,6 +93,8 @@ router.get('/seance/:id', auth(), (req, res) => {
             session.get('/crf/rest/seance/' + id + '/inscription').then(data => {
                 res.send(data.body);
                 db.setCachedResponse(req.url, data.body, 1000 * 60);
+            }).catch(err => {
+                console.error(err);
             });
         }
     });
@@ -103,6 +109,8 @@ router.get('/structure/:id', auth(), (req, res) => {
             session.get('/crf/rest/structure/' + id).then(data => {
                 res.send(data.body);
                 db.setCachedResponse(req.url, data.body, 1000 * 60);
+            }).catch(err => {
+                console.error(err);
             });
         }
     });
