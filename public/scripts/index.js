@@ -29,7 +29,7 @@ function seance () {
     const id = $(this).attr('seance');
     fetchRest('/rest/seance/' + id)
         .then(data => {
-            $('#infoContent').text(JSON.stringify(data));
+            $('#infoContent').html(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
             $('#info').show();
         })
         .catch(err => {
@@ -43,6 +43,7 @@ async function utilisateur () {
     const debut = new Date($('#debut').val());
     const fin = new Date($('#fin').val());
     fin.setDate(fin.getDate() + 1);
+    const filters = getFilters($('#result thead tr:nth-child(2)')[0]);
     try {
         const data = await fetchRest('/rest/utilisateur/' + nivol + '?debut=' + debut.toISOString() + '&fin=' + fin.toISOString());
         const table = $('#result tbody');
@@ -63,13 +64,16 @@ async function utilisateur () {
                 $('<td>'),
                 $('<td class="w3-hide-small">')
             ));
+            line.css('display', isLineFiltered(line, filters) ? 'none' : '');
             fetchRest('/rest/activite/' + item.activite.id)
                 .then(act => {
                     line.children('td:nth-child(4)').text(act.typeActivite.action.libelle);
                     line.children('td:nth-child(5)').text(act.libelle);
+                    line.css('display', isLineFiltered(line, filters) ? 'none' : '');
                     fetchRest('/rest/structure/' + act.structureOrganisatrice.id)
                         .then(data => {
                             line.children('td:nth-child(6)').text(data.libelle);
+                            line.css('display', isLineFiltered(line, filters) ? 'none' : '');
                         });
                 })
                 .catch(err => {
@@ -104,16 +108,31 @@ function loadBenevoles () {
         });
 }
 
-function filterTable () {
-    const input = this;
-    const th = input.parentNode;
-    const col = Array.from(th.parentNode.children).indexOf(th);
-    const filter = $(input).val().toUpperCase();
-    $('#result tbody tr').each((index, tr) => {
-        const td = $(tr).children('td')[col];
-        if (td) {
-            tr.style.display = $(td).text().toUpperCase().indexOf(filter) > -1 ? '' : 'none';
+function getFilters (tr) {
+    return Array.prototype.map.call(tr.children, td => {
+        const input = $(td).children('input')[0];
+        return $(input).val().toUpperCase();
+    });
+}
+
+function isLineFiltered(tr, filters) {    
+    for (let i = 0, children = $(tr).children('td'); i < children.length; ++i) {
+        let filter = filters[i];
+        if (filter) {
+            let text = $(children[i]).text();
+            if (text.toUpperCase().indexOf(filter) < 0) {
+                return true;
+            }
         }
+    }
+    return false;
+}
+
+function filterTable () {
+    const th = this.parentNode;
+    const filters = getFilters(th.parentNode);
+    $('#result tbody tr').each((index, tr) => {
+        tr.style.display = isLineFiltered(tr, filters) ? 'none' : '';
     });
 }
 
@@ -242,9 +261,7 @@ $(document).ready(() => {
     $('#fin').val(date.getFullYear() + '-' + padInt(date.getMonth() + 1) + '-' + date.getDate());
 
     const info = $('#info');
-    const infoButton = $('#closeInfo');
-    info.click(() => info.hide());
-    infoButton.click(() => info.hide());
+    $('#closeInfo').click(() => info.hide());
 
     const sidebar = $('#mySidebar');
     const main = $('#main');
