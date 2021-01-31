@@ -1,9 +1,14 @@
 #mySidebar {
-    width: 240px
+    width: 240px;
 }
 
 .with-sidebar {
     margin-left: 240px;
+}
+
+#main {
+    overflow-y: auto;
+    height: calc(100vh - 40.5px);
 }
 
 #result {
@@ -118,6 +123,10 @@ form.login input {
 }
 
 @media screen and (max-width: 601px) {
+
+    #main {
+        height: calc(100vh - 117.5px);
+    }
 
     .with-sidebar {
         margin-left: 0px;
