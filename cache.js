@@ -57,15 +57,13 @@ function loadBenevoles (db, structure, page = 0, count = 0) {
         console.log(response.body);
         const data = JSON.parse(response.body);
         const promises = [];
-        data.list.forEach(item => {
+        data.content.forEach(item => {
             promises.push(db.sadd('structure:' + structure, item.id));
-            // promises.push(db.hset('benevole:' + item.id, 'nom', item.nom));
-            // promises.push(db.hset('benevole:' + item.id, 'prenom', item.prenom));
             promises.push(db.hmset('benevole:' + item.id, 'nom', item.nom, 'prenom', item.prenom));
         });
         return Promise.all(promises).then(() => {
-            count += data.list.length;
-            if (count < data.total) {
+            count += data.content.length;
+            if (count < data.totalElements) {
                 return loadBenevoles(db, structure, page + 1, count);
             }
         });
@@ -76,5 +74,7 @@ if (args.b) {
     const db = new DB({ host: config.host });
     loadBenevoles(db, args.b).then(() => {
         db.close();
+    }).catch(err => {
+        console.error(err);
     });
 }
