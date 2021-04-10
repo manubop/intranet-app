@@ -38,51 +38,71 @@ function seance () {
         });
 }
 
+async function getLines (nivol, debut, fin, filters) {
+    let totalMinutes = 0;
+    let totalItems = 0;
+    let activites = 0;
+    let structures = 0;
+    const data = await fetchRest('/rest/utilisateur/' + nivol + '?debut=' + debut.toISOString() + '&fin=' + fin.toISOString());
+    data.sort((first, second) => first.debut.localeCompare(second.debut));
+    const promises = data.map(async item => {
+        const debut = new Date(item.debut);
+        const fin = new Date(item.fin);
+        const duree = (fin - debut) / 1000 / 60;
+        const minutes = duree % 60;
+        const heures = (duree - minutes) / 60;
+        const act = await fetchRest('/rest/activite/' + item.activite.id);
+        $('#activites').text(`${++activites}/${data.length} activités`);
+        const structure = await fetchRest('/rest/structure/' + act.structureOrganisatrice.id);
+        $('#structures').text(`${++structures}/${data.length} structures`);
+        const line = $('<tr>').on('click', seance).attr('seance', item.seance.id).append(
+            $('<td class="date">').attr('date', debut.toISOString()).text(debut.toLocaleDateString('fr-FR')),
+            $('<td class="w3-hide-small w3-hide-medium time">').text(debut.toLocaleTimeString('fr-FR', HOUR_FORMAT)),
+            $('<td class="w3-hide-small w3-hide-medium time">').attr('duree', duree).text(padInt(heures) + ':' + padInt(minutes)),
+            $('<td class="w3-hide-small">').text(act.typeActivite.action.libelle),
+            $('<td>').text(act.libelle),
+            $('<td class="w3-hide-small">').text(structure.libelle)
+        );
+        const children = line.children('td');
+        const filtered = isLineFiltered(children, filters);
+        line.css('display', filtered ? 'none' : '');
+        if (!filtered) {
+            totalItems++;
+            totalMinutes += duree;
+        }
+        return line;
+    });
+    const lines = await Promise.all(promises);
+    return {
+        totalMinutes,
+        totalItems,
+        lines
+    };
+}
+
 async function utilisateur () {
     const nivol = $('#nivol').val();
     const debut = new Date($('#debut').val());
     const fin = new Date($('#fin').val());
     fin.setDate(fin.getDate() + 1);
     const filters = getFilters($('#result thead tr:nth-child(2)')[0]);
+    const table = $('#result tbody');
     try {
-        const data = await fetchRest('/rest/utilisateur/' + nivol + '?debut=' + debut.toISOString() + '&fin=' + fin.toISOString());
-        const table = $('#result tbody');
+        $('#totalItems').hide();
+        $('#activites').text('');
+        $('#structures').text('');
+        $('#status').show();
         table.children('tr').remove();
-        data.sort((first, second) => first.debut.localeCompare(second.debut));
-        data.forEach(item => {
-            const debut = new Date(item.debut);
-            const fin = new Date(item.fin);
-            const total = (fin - debut) / 1000 / 60;
-            const minutes = total % 60;
-            const heures = (total - minutes) / 60;
-            const line = $('<tr>');
-            table.append(line.click(seance).attr('seance', item.seance.id).append(
-                $('<td class="date">').attr('date', debut.toISOString()).text(debut.toLocaleDateString('fr-FR')),
-                $('<td class="w3-hide-small w3-hide-medium time">').text(debut.toLocaleTimeString('fr-FR', HOUR_FORMAT)),
-                $('<td class="w3-hide-small w3-hide-medium time">').text(padInt(heures) + ':' + padInt(minutes)),
-                $('<td class="w3-hide-small">'),
-                $('<td>'),
-                $('<td class="w3-hide-small">')
-            ));
-            line.css('display', isLineFiltered(line, filters) ? 'none' : '');
-            fetchRest('/rest/activite/' + item.activite.id)
-                .then(act => {
-                    line.children('td:nth-child(4)').text(act.typeActivite.action.libelle);
-                    line.children('td:nth-child(5)').text(act.libelle);
-                    line.css('display', isLineFiltered(line, filters) ? 'none' : '');
-                    fetchRest('/rest/structure/' + act.structureOrganisatrice.id)
-                        .then(data => {
-                            line.children('td:nth-child(6)').text(data.libelle);
-                            line.css('display', isLineFiltered(line, filters) ? 'none' : '');
-                        });
-                })
-                .catch(err => {
-                    console.error(err);
-                });
-        });
+        const result = await getLines(nivol, debut, fin, filters);
+        table.append(result.lines);
+        $('#status').hide();
+        $('#totalItems').show();
+        $('#totalItems').text(`Total items: ${result.totalItems} / Total time: ${(result.totalMinutes / 60).toFixed(1)}h`);
     } catch (err) {
         console.error(err);
-        window.location.replace('/login');
+        if (err instanceof AuthorizationException) {
+            window.location.replace('/login');
+        }
     }
 }
 
@@ -115,11 +135,11 @@ function getFilters (tr) {
     });
 }
 
-function isLineFiltered(tr, filters) {    
-    for (let i = 0, children = $(tr).children('td'); i < children.length; ++i) {
-        let filter = filters[i];
+function isLineFiltered (children, filters) {
+    for (let i = 0; i < children.length; ++i) {
+        const filter = filters[i];
         if (filter) {
-            let text = $(children[i]).text();
+            const text = $(children[i]).text();
             if (text.toUpperCase().indexOf(filter) < 0) {
                 return true;
             }
@@ -131,9 +151,18 @@ function isLineFiltered(tr, filters) {
 function filterTable () {
     const th = this.parentNode;
     const filters = getFilters(th.parentNode);
+    let totalItems = 0;
+    let totalMinutes = 0;
     $('#result tbody tr').each((index, tr) => {
-        tr.style.display = isLineFiltered(tr, filters) ? 'none' : '';
+        const children = $(tr).children('td');
+        const filtered = isLineFiltered(children, filters);
+        tr.style.display = filtered ? 'none' : '';
+        if (!filtered) {
+            totalItems++;
+            totalMinutes += parseInt($(children[2]).attr('duree'));
+        }
     });
+    $('#totalItems').text(`Total items: ${totalItems} / Total time: ${(totalMinutes / 60).toFixed(1)}h`);
 }
 
 function getCellValue (x) {
@@ -274,4 +303,6 @@ $(() => {
     const x = $('#searchAccordion');
     const i = $('#searchBarItem i');
     $('#searchBarItem').on('click', toggleSearchBarItem.bind(null, x, i));
+
+    $('#status').hide();
 });

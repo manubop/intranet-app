@@ -11,6 +11,10 @@
     height: calc(100vh - 40.5px);
 }
 
+#totalItems {
+    font-weight: bold;
+}
+
 #result {
     border-collapse: collapse;
     margin: 15px 0;
