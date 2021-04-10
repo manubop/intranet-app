@@ -8,112 +8,119 @@ const session = new intranet.IntranetSession(credentials.url, credentials.user, 
 
 const router = express.Router();
 
-router.get('/utilisateur/:nivol', auth(), (req, res) => {
-    db.getCachedResponse(req.url).then(data => {
-        if (data) {
-            res.send(data);
-        } else {
-            const { debut, fin } = req.query;
-            const { nivol } = req.params;
-            session.get('/crf/rest/utilisateur/' + nivol + '/inscription?debut=' + debut + '&fin=' + fin).then(data => {
-                res.send(data.body);
-                db.setCachedResponse(req.url, data.body, 1000 * 60);
-            }).catch(err => {
-                console.error(err);
+const dl = (() => {
+    /**
+     * @param {string} structure
+     * @param {number} page
+     * @param {number} count
+     * @returns {Promise}
+     */
+    function loadBenevoles (structure, page = 0, count = 0) {
+        return session.get('/crf/rest/utilisateur?action=19&pageInfo=true&searchType=benevoles&structure=' + structure + '&page=' + page).then(response => {
+            const data = JSON.parse(response.body);
+            const benevoles = data.content.map(item => {
+                return {
+                    id: item.id,
+                    nom: item.nom,
+                    prenom: item.prenom
+                };
             });
-        }
-    });
-});
+            count += data.content.length;
+            if (count < data.totalElements) {
+                return loadBenevoles(structure, page + 1, count).then(result => {
+                    return benevoles.concat(result);
+                });
+            }
+            return benevoles;
+        });
+    }
 
-router.get('/activite/:id', auth(), (req, res) => {
-    db.getCachedResponse(req.url).then(data => {
-        if (data) {
-            res.send(data);
-        } else {
-            const { id } = req.params;
-            session.get('/crf/rest/activite/' + id).then(data => {
-                res.send(data.body);
-                db.setCachedResponse(req.url, data.body, 1000 * 60);
-            }).catch(err => {
-                console.error(err);
-            });
-        }
-    });
-});
-
-/**
- * @param {string} structure
- * @param {number} page
- * @param {number} count
- * @returns {Promise}
- */
-function loadBenevoles (structure, page = 0, count = 0) {
-    return session.get('/crf/rest/utilisateur?action=19&pageInfo=true&searchType=benevoles&structure=' + structure + '&page=' + page).then(response => {
-        const data = JSON.parse(response.body);
-        const benevoles = data.list.map(item => {
-            return {
-                id: item.id,
-                nom: item.nom,
-                prenom: item.prenom
+    return {
+        tryGetFromCache: async function (key) {
+            try {
+                return await db.getCachedResponse(key);
+            } catch (e) {
+                console.error(e);
+            }
+            return null;
+        },
+        tryGetFromUrl: async function (url, key, ttl) {
+            try {
+                const data = await session.get(url);
+                if (data) {
+                    db.setCachedResponse(key, data.body, ttl).catch(err => {
+                        console.error(err);
+                    });
+                    return data.body;
+                }
+            } catch (e) {
+                console.error(e);
             };
-        });
-        count += data.list.length;
-        if (count < data.total) {
-            return loadBenevoles(structure, page + 1, count).then(result => {
-                return benevoles.concat(result);
+            return null;
+        },
+        tryGetFromCacheOrUrl: async function (res, key, url) {
+            let data = await this.tryGetFromCache(key);
+            if (!data) {
+                data = await this.tryGetFromUrl(url(), key, 1000 * 60);
+            }
+            res.send(data);
+        },
+        downloadBenevoles: function (res, structure) {
+            loadBenevoles(structure).then(result => {
+                res.send(result);
+            }).catch(err => {
+                console.error(err);
             });
         }
-        return benevoles;
-    });
-}
+    };
+})();
 
-router.get('/benevoles/:structure', auth(), (req, res) => {
+router.get('/utilisateur/:nivol', auth(), async (req, res) => {
+    dl.tryGetFromCacheOrUrl(res, req.url, () => {
+        const { debut, fin } = req.query;
+        const { nivol } = req.params;
+        return '/crf/rest/utilisateur/' + nivol + '/inscription?debut=' + debut + '&fin=' + fin;
+    });
+});
+
+router.get('/activite/:id', auth(), async (req, res) => {
+    dl.tryGetFromCacheOrUrl(res, req.url, () => {
+        const { id } = req.params;
+        return '/crf/rest/activite/' + id;
+    });
+});
+
+router.get('/seance/:id', auth(), async (req, res) => {
+    dl.tryGetFromCacheOrUrl(res, req.url, () => {
+        const { id } = req.params;
+        return '/crf/rest/seance/' + id + '/inscription';
+    });
+});
+
+router.get('/structure/:id', auth(), async (req, res) => {
+    dl.tryGetFromCacheOrUrl(res, req.url, () => {
+        const { id } = req.params;
+        return '/crf/rest/structure/' + id;
+    });
+});
+
+router.get('/benevoles/:structure', auth(), async (req, res) => {
     const { structure } = req.params;
-    db.getStructure(structure).then(reply => {
-        const promises = [];
-        reply.forEach(nivol => {
-            promises.push(db.getBenevole(nivol));
-        });
-        Promise.all(promises).then(result => {
-            res.send(result);
-        });
-    }).catch(() => {
-        loadBenevoles(structure).then(result => {
-            res.send(result);
-        });
-    });
-});
-
-router.get('/seance/:id', auth(), (req, res) => {
-    db.getCachedResponse(req.url).then(data => {
-        if (data) {
-            res.send(data);
-        } else {
-            const { id } = req.params;
-            session.get('/crf/rest/seance/' + id + '/inscription').then(data => {
-                res.send(data.body);
-                db.setCachedResponse(req.url, data.body, 1000 * 60);
+    try {
+        const reply = await db.getStructure(structure);
+        if (reply) {
+            const promises = reply.map(nivol => db.getBenevole(nivol));
+            return Promise.all(promises).then(result => {
+                res.send(result);
             }).catch(err => {
                 console.error(err);
+                dl.downloadBenevoles(res, structure);
             });
         }
-    });
-});
-
-router.get('/structure/:id', auth(), (req, res) => {
-    db.getCachedResponse(req.url).then(data => {
-        if (data) {
-            res.send(data);
-        } else {
-            const { id } = req.params;
-            session.get('/crf/rest/structure/' + id).then(data => {
-                res.send(data.body);
-                db.setCachedResponse(req.url, data.body, 1000 * 60);
-            }).catch(err => {
-                console.error(err);
-            });
-        }
-    });
+    } catch (e) {
+        console.err(e);
+    }
+    dl.downloadBenevoles(res, structure);
 });
 
 module.exports = router;

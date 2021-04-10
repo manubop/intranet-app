@@ -16,18 +16,24 @@ router.get('/login', (req, res) => {
 
 router.post('/login', async (req, res) => {
     const { name, password } = req.body;
-    const user = await db.getUser(name);
-    if (!user) {
-        return res.sendStatus(401);
-    }
-    const hash = user.password;
-    const match = await bcrypt.compare(password, hash);
-    if (match) {
+    try {
+        const user = await db.getUser(name);
+        if (!user) {
+            console.info(`user ${name} not found`);
+            return res.sendStatus(401);
+        }
+        const hash = user.password;
+        const match = await bcrypt.compare(password, hash);
+        if (!match) {
+            console.info(`password mismatch for user ${name}`);
+            return res.sendStatus(401);
+        }
         const token = jwt.sign({ name: user.name, role: user.role, ip: req.ip }, process.env.JWT_KEY);
         res.cookie('AuthToken', token, { httpOnly: true });
         res.redirect('/');
-    } else {
-        res.sendStatus(401);
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
     }
 });
 

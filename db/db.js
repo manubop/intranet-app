@@ -16,12 +16,16 @@ module.exports = {
     getCachedResponse: function (url) {
         return new Promise((resolve, reject) => {
             client.hgetall('url:' + url, (err, reply) => {
-                if (!err && reply && Date.now() < reply.expires) {
-                    console.log('cache hit: ' + url);
-                    resolve(reply.payload);
+                if (!err) {
+                    if (!reply || Date.now() >= reply.expires) {
+                        console.log('cache miss: ' + url);
+                        resolve(null);
+                    } else {
+                        console.log('cache hit: ' + url);
+                        resolve(reply.payload);
+                    }
                 } else {
-                    console.log('cache miss: ' + url);
-                    resolve(null);
+                    reject(err);
                 }
             });
         });
@@ -32,7 +36,7 @@ module.exports = {
                 if (!err) {
                     resolve(reply);
                 } else {
-                    resolve(null);
+                    reject(err);
                 }
             });
         });
@@ -43,7 +47,7 @@ module.exports = {
                 if (!err) {
                     resolve(reply);
                 } else {
-                    resolve(null);
+                    reject(err);
                 }
             });
         });
