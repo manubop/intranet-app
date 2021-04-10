@@ -240,14 +240,14 @@ function toggleSearchBarItem (x, i) {
     }
 }
 
-$(document).ready(() => {
+$(() => {
     loadBenevoles();
     loadAdmin();
 
-    $('#fetch').click(utilisateur);
-    $('#result thead input').keyup(filterTable);
-    $('#result thead th').click(sortTable);
-    $('a.nav').click(navigate);
+    $('#fetch').on('click', utilisateur);
+    $('#result thead input').on('keyup', filterTable);
+    $('#result thead th').on('click', sortTable);
+    $('a.nav').on('click', navigate);
     $('.datepicker').datepicker({
         showOtherMonths: true,
         selectOtherMonths: true,
@@ -261,17 +261,17 @@ $(document).ready(() => {
     $('#fin').val(date.getFullYear() + '-' + padInt(date.getMonth() + 1) + '-' + date.getDate());
 
     const info = $('#info');
-    $('#closeInfo').click(() => info.hide());
+    $('#closeInfo').on('click', () => info.hide());
 
     const sidebar = $('#mySidebar');
     const main = $('#main');
-    $('#toggleSidebar').click(toggleSidebar.bind(null, sidebar, main));
-    $('#closeSidebar').click(toggleSidebar.bind(null, sidebar, main));
+    $('#toggleSidebar').on('click', toggleSidebar.bind(null, sidebar, main));
+    $('#closeSidebar').on('click', toggleSidebar.bind(null, sidebar, main));
 
     const tableBody = $('#result tbody').get(0);
-    $('#copyTable').click(copyElementContents.bind(null, tableBody));
+    $('#copyTable').on('click', copyElementContents.bind(null, tableBody));
 
     const x = $('#searchAccordion');
     const i = $('#searchBarItem i');
-    $('#searchBarItem').click(toggleSearchBarItem.bind(null, x, i));
+    $('#searchBarItem').on('click', toggleSearchBarItem.bind(null, x, i));
 });
