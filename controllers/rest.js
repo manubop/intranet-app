@@ -118,7 +118,7 @@ router.get('/benevoles/:structure', auth(), async (req, res) => {
             });
         }
     } catch (e) {
-        console.err(e);
+        console.error(e);
     }
     dl.downloadBenevoles(res, structure);
 });
