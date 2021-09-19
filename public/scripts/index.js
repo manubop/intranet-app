@@ -10,6 +10,44 @@ const HOUR_FORMAT = {
     minute: '2-digit'
 };
 
+const state = (function () {
+    let sorted = null;
+    /**
+     * @param {JQuery<any>} th
+     */
+    const updateSort = function (th) {
+        const title = th.attr('title');
+        const ascending = th.attr('sort') === 'asc';
+        const caret = ascending ? 'up' : 'down';
+
+        th.html(`${title} <i class="fa fa-caret-${caret}"></i>`);
+
+        if (sorted && !sorted.is(th)) {
+            sorted.removeAttr('sort');
+            sorted.text(sorted.attr('title'));
+        }
+
+        sorted = th;
+    };
+    return {
+        /**
+         * @param {JQuery<any>} th
+         */
+        toggleSort: function (th) {
+            th.attr('sort', (_, attr) => attr === 'asc' ? 'dec' : 'asc');
+            updateSort(th);
+        },
+        /**
+         * @param {JQuery<any>} th
+         * @param {boolean} ascending
+         */
+        setSort: function (th, ascending) {
+            th.attr('sort', ascending ? 'asc' : 'dec');
+            updateSort(th);
+        }
+    };
+})();
+
 function AuthorizationException () {};
 
 function padInt (n) {
@@ -95,6 +133,7 @@ async function utilisateur () {
         table.children('tr').remove();
         const result = await getLines(nivol, debut, fin, filters);
         table.append(result.lines);
+        state.setSort($('#result th').first(), true);
         $('#status').hide();
         $('#totalItems').show();
         $('#totalItems').text(`Total items: ${result.totalItems} / Total time: ${(result.totalMinutes / 60).toFixed(1)}h`);
@@ -190,12 +229,15 @@ function comparer (col, asc) {
     };
 }
 
-function sortTable () {
-    const th = this;
-    const col = Array.from(th.parentNode.children).indexOf(th);
+/**
+ * @param {JQuery<any>} th
+ */
+function sortTable (th) {
+    const ascending = th.attr('sort') === 'asc';
     const table = $('#result tbody');
+
     Array.from(table.children('tr'))
-        .sort(comparer(col, this.asc = !this.asc))
+        .sort(comparer(th.index(), ascending))
         .forEach(tr => table.append(tr));
 }
 
@@ -278,7 +320,11 @@ $(() => {
     $('#ul').on('change', loadBenevoles);
     $('#fetch').on('click', utilisateur);
     $('#result thead input').on('keyup', filterTable);
-    $('#result thead th').on('click', sortTable);
+    $('#result thead th').on('click', function () {
+        const th = $(this);
+        state.toggleSort(th);
+        sortTable(th);
+    });
     $('a.nav').on('click', navigate);
     $('.datepicker').datepicker({
         showOtherMonths: true,
