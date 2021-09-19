@@ -107,9 +107,11 @@ async function utilisateur () {
 }
 
 function loadBenevoles () {
-    fetchRest('/rest/benevoles/974')
+    const ul = $('#ul').val();
+    fetchRest('/rest/benevoles/' + ul)
         .then(data => {
             const input = $('#nivol');
+            input.empty();
             data.sort((first, second) => {
                 let r = first.nom.localeCompare(second.nom);
                 if (!r) {
@@ -273,6 +275,7 @@ $(() => {
     loadBenevoles();
     loadAdmin();
 
+    $('#ul').on('change', loadBenevoles);
     $('#fetch').on('click', utilisateur);
     $('#result thead input').on('keyup', filterTable);
     $('#result thead th').on('click', sortTable);
