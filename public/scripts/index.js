@@ -147,10 +147,12 @@ async function utilisateur () {
 
 function loadBenevoles () {
     const ul = $('#ul').val();
+    const input = $('#nivol');
+
+    input.empty();
+
     fetchRest('/rest/benevoles/' + ul)
         .then(data => {
-            const input = $('#nivol');
-            input.empty();
             data.sort((first, second) => {
                 let r = first.nom.localeCompare(second.nom);
                 if (!r) {
