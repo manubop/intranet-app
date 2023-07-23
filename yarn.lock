@@ -1026,7 +1026,7 @@ internal-slot@^1.0.5:
     has "^1.0.3"
     side-channel "^1.0.4"
 
-"intranet@git+ssh://git@github.com/manubop/intranet.git":
+"intranet@git+ssh://git@github.com/manubop/intranet.git#0.0.1":
   version "1.1.6"
   resolved "git+ssh://git@github.com/manubop/intranet.git#72f4758eb22ac485e901703f7d22e839909d9b81"
   dependencies:
