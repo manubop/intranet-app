@@ -3,9 +3,9 @@ const config = require('../config/redis.json');
 
 const client = redis.createClient({
     host: config.host,
-    retry_strategy: function (options) {
+    retry_strategy: function () {
         return new Error('shit');
-    }
+    },
 });
 
 client.on('error', function (err) {
@@ -73,5 +73,5 @@ module.exports = {
                 }
             });
         });
-    }
+    },
 };

@@ -2,7 +2,7 @@
 
 const HOUR_FORMAT = {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
 };
 
 const state = (function () {
@@ -39,11 +39,11 @@ const state = (function () {
         setSort: function (th, ascending) {
             th.attr('sort', ascending ? 'asc' : 'dec');
             updateSort(th);
-        }
+        },
     };
 })();
 
-function padInt (n) {
+function padInt(n) {
     return (n < 10 ? '0' : '') + n;
 }
 
@@ -52,7 +52,6 @@ function NotLoggedInException() {}
 function UnexpectedException() {}
 
 const req = (() => {
-
     const FETCH_OPTIONS = {
         // credentials: 'include',
         redirect: 'manual',
@@ -61,15 +60,15 @@ const req = (() => {
 
     const TTL = 1000 * 60;
     const URL_BASE = 'https://pegass.croix-rouge.fr/crf';
-    
-    const db = new Dexie("FetchCache");
+
+    const db = new Dexie('FetchCache');
 
     db.version(1).stores({
-        cache: "path"
+        cache: 'path',
     });
-    
+
     return {
-        fetch: async function (path) {
+        fetch: async (path) => {
             const timestamp = Date.now();
             const entry = await db.cache.get(path);
             if (entry && timestamp - entry.timestamp < TTL) {
@@ -85,7 +84,7 @@ const req = (() => {
             const data = await response.json();
             db.cache.put({path, timestamp, data});
             return data;
-        }    
+        },
     };
 })();
 
@@ -96,7 +95,7 @@ function handleException(e) {
     }
 }
 
-function seance () {
+function seance() {
     const id = $(this).attr('seance');
     req.fetch('/rest/seance/' + id)
         .then(data => {
@@ -106,7 +105,7 @@ function seance () {
         .catch(handleException);
 }
 
-async function getLines (nivol, debut, fin, filters) {
+async function getLines(nivol, debut, fin, filters) {
     let totalMinutes = 0;
     let totalItems = 0;
     let activites = 0;
@@ -129,7 +128,7 @@ async function getLines (nivol, debut, fin, filters) {
             $('<td class="w3-hide-small w3-hide-medium time">').attr('duree', duree).text(padInt(heures) + ':' + padInt(minutes)),
             $('<td class="w3-hide-small">').text(act.typeActivite.action.libelle),
             $('<td>').text(act.libelle),
-            $('<td class="w3-hide-small">').text(structure.libelle)
+            $('<td class="w3-hide-small">').text(structure.libelle),
         );
         const children = line.children('td');
         const filtered = isLineFiltered(children, filters);
@@ -144,18 +143,18 @@ async function getLines (nivol, debut, fin, filters) {
     return {
         totalMinutes,
         totalItems,
-        lines
+        lines,
     };
 }
 
-function loadBenevolesInt (structure, page = 0, count = 0) {
+function loadBenevolesInt(structure, page = 0, count = 0) {
     return req.fetch('/rest/utilisateur?action=19&pageInfo=true&searchType=benevoles&structure=' + structure + '&page=' + page).then(response => {
         // const data = JSON.parse(response.content);
         const benevoles = response.content.map(item => {
             return {
                 id: item.id,
                 nom: item.nom,
-                prenom: item.prenom
+                prenom: item.prenom,
             };
         });
         count += response.content.length;
@@ -168,7 +167,7 @@ function loadBenevolesInt (structure, page = 0, count = 0) {
     });
 }
 
-function loadBenevoles () {
+function loadBenevoles() {
     const ul = $('#ul').val();
     const input = $('#nivol');
 
@@ -185,14 +184,14 @@ function loadBenevoles () {
             }).forEach(item => {
                 input.append($('<option>', {
                     value: item.id,
-                    text: item.nom + ' ' + item.prenom
+                    text: item.nom + ' ' + item.prenom,
                 }));
             });
         })
         .catch(handleException);
 }
 
-function isLineFiltered (children, filters) {
+function isLineFiltered(children, filters) {
     for (let i = 0; i < children.length; ++i) {
         const filter = filters[i];
         if (filter) {
@@ -205,7 +204,7 @@ function isLineFiltered (children, filters) {
     return false;
 }
 
-function filterTable (filters, table, totalItemsElement) {
+function filterTable(filters, table, totalItemsElement) {
     filters = filters.get();
     let totalItems = 0;
     let totalMinutes = 0;
@@ -221,7 +220,10 @@ function filterTable (filters, table, totalItemsElement) {
     totalItemsElement.text(`Total items: ${totalItems} / Total time: ${(totalMinutes / 60).toFixed(1)}h`);
 }
 
-function getCellValue (x) {
+/**
+ * @param {HTMLElement} x
+ */
+function getCellValue(x) {
     const date = $(x).attr('date');
     if (date) {
         return date;
@@ -229,7 +231,7 @@ function getCellValue (x) {
     return x.innerHTML;
 }
 
-function comparer (col, asc) {
+function comparer(col, asc) {
     if (asc) {
         return (x, y) => {
             const xVal = getCellValue(x.children[col]);
@@ -247,7 +249,7 @@ function comparer (col, asc) {
 /**
  * @param {JQuery<any>} th
  */
-function sortTable (th, table) {
+function sortTable(th, table) {
     const ascending = th.attr('sort') === 'asc';
 
     Array.from(table.children('tr'))
@@ -255,28 +257,28 @@ function sortTable (th, table) {
         .forEach(tr => table.append(tr));
 }
 
-function loadAdmin () {
-    fetch('/admin').then(response => {
-        return response.text();
-    }).then(data => {
-        if (data === 'Unauthorized') {
-            $('a.nav[did="admin"]').hide();
-        } else {
-            $('div#admin').html(data);
-        }
-    });
-};
+// function loadAdmin() {
+//     fetch('/admin').then(response => {
+//         return response.text();
+//     }).then(data => {
+//         if (data === 'Unauthorized') {
+//             $('a.nav[did="admin"]').hide();
+//         } else {
+//             $('div#admin').html(data);
+//         }
+//     });
+// }
 
-function navigate () {
+function navigate() {
     const t = $(this);
     if (t.attr('href')) {
         const did = t.attr('did');
         $('div.tab').addClass('w3-hide');
         $('div.tab#' + did).removeClass('w3-hide');
     }
-};
+}
 
-function toggleSidebar (sidebar, main) {
+function toggleSidebar(sidebar, main) {
     if (sidebar.hasClass('w3-hide')) {
         main.addClass('with-sidebar');
         sidebar.removeClass('w3-hide');
@@ -284,9 +286,9 @@ function toggleSidebar (sidebar, main) {
         main.removeClass('with-sidebar');
         sidebar.addClass('w3-hide');
     }
-};
+}
 
-function copyElementContents (el) {
+function copyElementContents(el) {
     const range = document.createRange();
     const sel = window.getSelection();
     sel.removeAllRanges();
@@ -299,7 +301,7 @@ function copyElementContents (el) {
     }
     document.execCommand('Copy');
     sel.removeAllRanges();
-};
+}
 
 /*
 function copyTable () {
@@ -313,7 +315,7 @@ function copyTable () {
 };
 */
 
-function toggleSearchBarItem (x, i) {
+function toggleSearchBarItem(x, i) {
     if (!x.hasClass('w3-show')) {
         x.addClass('w3-show');
         x.prev().addClass('w3-green');
@@ -329,7 +331,7 @@ function toggleSearchBarItem (x, i) {
 
 $(() => {
     const filters = (() => {
-    
+
         const tr = $('#result thead tr:nth-child(2)');
 
         return {
@@ -338,10 +340,10 @@ $(() => {
                     const input = $(td).children('input');
                     return $(input).val().toUpperCase();
                 });
-            }
+            },
         };
     })();
-    
+
     const utilisateur = async (filters) => {
         const nivol = $('#nivol').val();
         const debut = new Date($('#debut').val());
@@ -363,8 +365,8 @@ $(() => {
         } catch (err) {
             handleException(err);
         }
-    }
-    
+    };
+
     loadBenevoles();
     // loadAdmin();
 
@@ -381,7 +383,7 @@ $(() => {
     $('.datepicker').datepicker({
         showOtherMonths: true,
         selectOtherMonths: true,
-        dateFormat: 'yy-mm-dd'
+        dateFormat: 'yy-mm-dd',
     });
 
     const date = new Date();

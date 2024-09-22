@@ -6,13 +6,13 @@ const config = require('./config/redis.json');
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
         h: 'help',
-        b: 'benevoles'
-    }
+        b: 'benevoles',
+    },
 });
 
 const session = new intranet.IntranetSession(credentials.url, credentials.user, credentials.password);
 
-function DB (options) {
+function DB(options) {
     const client = redis.createClient(options);
     this.sadd = function (key, val) {
         return new Promise((resolve, reject) => {
@@ -52,7 +52,7 @@ function DB (options) {
     };
 }
 
-function loadBenevoles (db, structure, page = 0, count = 0) {
+function loadBenevoles(db, structure, page = 0, count = 0) {
     return session.get('/crf/rest/utilisateur?action=19&pageInfo=true&searchType=benevoles&structure=' + structure + '&page=' + page).then(response => {
         console.log(response.body);
         const data = JSON.parse(response.body);

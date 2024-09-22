@@ -2,12 +2,12 @@
 
 const FETCH_OPTIONS = {
     credentials: 'include',
-    redirect: 'error'
+    redirect: 'error',
 };
 
 const HOUR_FORMAT = {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
 };
 
 const state = (function () {
@@ -44,17 +44,17 @@ const state = (function () {
         setSort: function (th, ascending) {
             th.attr('sort', ascending ? 'asc' : 'dec');
             updateSort(th);
-        }
+        },
     };
 })();
 
-function AuthorizationException () {};
+function AuthorizationException() {}
 
-function padInt (n) {
+function padInt(n) {
     return (n < 10 ? '0' : '') + n;
 }
 
-async function fetchRest (path) {
+async function fetchRest(path) {
     const response = await fetch(path, FETCH_OPTIONS);
     const data = await response.json();
     if (data.authorization === 'failed') {
@@ -63,7 +63,7 @@ async function fetchRest (path) {
     return data;
 }
 
-function seance () {
+function seance() {
     const id = $(this).attr('seance');
     fetchRest('/rest/seance/' + id)
         .then(data => {
@@ -76,7 +76,14 @@ function seance () {
         });
 }
 
-async function getLines (nivol, debut, fin, filters) {
+/**
+ * @param {string} nivol
+ * @param {Date} debut
+ * @param {Date} fin
+ * @param {Array<string>} filters
+ * @returns {Promise<{totalMinutes: number, totalItems: number, lines: Array<JQuery<any>>}>}
+ */
+async function getLines(nivol, debut, fin, filters) {
     let totalMinutes = 0;
     let totalItems = 0;
     let activites = 0;
@@ -99,7 +106,7 @@ async function getLines (nivol, debut, fin, filters) {
             $('<td class="w3-hide-small w3-hide-medium time">').attr('duree', duree).text(padInt(heures) + ':' + padInt(minutes)),
             $('<td class="w3-hide-small">').text(act.typeActivite.action.libelle),
             $('<td>').text(act.libelle),
-            $('<td class="w3-hide-small">').text(structure.libelle)
+            $('<td class="w3-hide-small">').text(structure.libelle),
         );
         const children = line.children('td');
         const filtered = isLineFiltered(children, filters);
@@ -114,11 +121,11 @@ async function getLines (nivol, debut, fin, filters) {
     return {
         totalMinutes,
         totalItems,
-        lines
+        lines,
     };
 }
 
-async function utilisateur () {
+async function utilisateur() {
     const nivol = $('#nivol').val();
     const debut = new Date($('#debut').val());
     const fin = new Date($('#fin').val());
@@ -145,7 +152,7 @@ async function utilisateur () {
     }
 }
 
-function loadBenevoles () {
+function loadBenevoles() {
     const ul = $('#ul').val();
     const input = $('#nivol');
 
@@ -162,7 +169,7 @@ function loadBenevoles () {
             }).forEach(item => {
                 input.append($('<option>', {
                     value: item.id,
-                    text: item.nom + ' ' + item.prenom
+                    text: item.nom + ' ' + item.prenom,
                 }));
             });
         })
@@ -171,14 +178,22 @@ function loadBenevoles () {
         });
 }
 
-function getFilters (tr) {
+/**
+ * @param {HTMLElement} tr
+ * @returns {Array<string>}
+ */
+function getFilters(tr) {
     return Array.prototype.map.call(tr.children, td => {
         const input = $(td).children('input')[0];
         return $(input).val().toUpperCase();
     });
 }
 
-function isLineFiltered (children, filters) {
+/**
+ * @param {Array<HTMLElement>} children
+ * @param {Array<string>} filters
+ */
+function isLineFiltered(children, filters) {
     for (let i = 0; i < children.length; ++i) {
         const filter = filters[i];
         if (filter) {
@@ -191,12 +206,12 @@ function isLineFiltered (children, filters) {
     return false;
 }
 
-function filterTable () {
+function filterTable() {
     const th = this.parentNode;
     const filters = getFilters(th.parentNode);
     let totalItems = 0;
     let totalMinutes = 0;
-    $('#result tbody tr').each((index, tr) => {
+    $('#result tbody tr').each((_, tr) => {
         const children = $(tr).children('td');
         const filtered = isLineFiltered(children, filters);
         tr.style.display = filtered ? 'none' : '';
@@ -208,7 +223,11 @@ function filterTable () {
     $('#totalItems').text(`Total items: ${totalItems} / Total time: ${(totalMinutes / 60).toFixed(1)}h`);
 }
 
-function getCellValue (x) {
+/**
+ * @param {HTMLElement} x
+ * @returns {string}
+ */
+function getCellValue(x) {
     const date = $(x).attr('date');
     if (date) {
         return date;
@@ -216,7 +235,11 @@ function getCellValue (x) {
     return x.innerHTML;
 }
 
-function comparer (col, asc) {
+/**
+ * @param {number} col
+ * @param {boolean} asc
+ */
+function comparer(col, asc) {
     if (asc) {
         return (x, y) => {
             const xVal = getCellValue(x.children[col]);
@@ -234,7 +257,7 @@ function comparer (col, asc) {
 /**
  * @param {JQuery<any>} th
  */
-function sortTable (th) {
+function sortTable(th) {
     const ascending = th.attr('sort') === 'asc';
     const table = $('#result tbody');
 
@@ -243,7 +266,7 @@ function sortTable (th) {
         .forEach(tr => table.append(tr));
 }
 
-function loadAdmin () {
+function loadAdmin() {
     fetch('/admin').then(response => {
         return response.text();
     }).then(data => {
@@ -253,18 +276,22 @@ function loadAdmin () {
             $('div#admin').html(data);
         }
     });
-};
+}
 
-function navigate () {
+function navigate() {
     const t = $(this);
     if (t.attr('href')) {
         const did = t.attr('did');
         $('div.tab').addClass('w3-hide');
         $('div.tab#' + did).removeClass('w3-hide');
     }
-};
+}
 
-function toggleSidebar (sidebar, main) {
+/**
+ * @param {JQuery<any>} sidebar
+ * @param {JQuery<any>} main
+ */
+function toggleSidebar(sidebar, main) {
     if (sidebar.hasClass('w3-hide')) {
         main.addClass('with-sidebar');
         sidebar.removeClass('w3-hide');
@@ -272,9 +299,12 @@ function toggleSidebar (sidebar, main) {
         main.removeClass('with-sidebar');
         sidebar.addClass('w3-hide');
     }
-};
+}
 
-function copyElementContents (el) {
+/**
+ * @param {Node} el
+ */
+function copyElementContents(el) {
     const range = document.createRange();
     const sel = window.getSelection();
     sel.removeAllRanges();
@@ -287,7 +317,7 @@ function copyElementContents (el) {
     }
     document.execCommand('Copy');
     sel.removeAllRanges();
-};
+}
 
 /*
 function copyTable () {
@@ -301,7 +331,11 @@ function copyTable () {
 };
 */
 
-function toggleSearchBarItem (x, i) {
+/**
+ * @param {JQuery<any>} x
+ * @param {JQuery<any>} i
+ */
+function toggleSearchBarItem(x, i) {
     if (!x.hasClass('w3-show')) {
         x.addClass('w3-show');
         x.prev().addClass('w3-green');
@@ -331,7 +365,7 @@ $(() => {
     $('.datepicker').datepicker({
         showOtherMonths: true,
         selectOtherMonths: true,
-        dateFormat: 'yy-mm-dd'
+        dateFormat: 'yy-mm-dd',
     });
 
     const date = new Date();

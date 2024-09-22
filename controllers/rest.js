@@ -15,14 +15,14 @@ const dl = (() => {
      * @param {number} count
      * @returns {Promise}
      */
-    function loadBenevoles (structure, page = 0, count = 0) {
+    function loadBenevoles(structure, page = 0, count = 0) {
         return session.get('/crf/rest/utilisateur?action=19&pageInfo=true&searchType=benevoles&structure=' + structure + '&page=' + page).then(response => {
             const data = JSON.parse(response.body);
             const benevoles = data.content.map(item => {
                 return {
                     id: item.id,
                     nom: item.nom,
-                    prenom: item.prenom
+                    prenom: item.prenom,
                 };
             });
             count += data.content.length;
@@ -55,13 +55,13 @@ const dl = (() => {
                 }
             } catch (e) {
                 console.error(e);
-            };
+            }
             return null;
         },
         tryGetFromCacheOrUrl: async function (res, key, url) {
             let data = await this.tryGetFromCache(key);
             if (!data) {
-                data = await this.tryGetFromUrl(url(), key, 1000 * 60);
+                data = await this.tryGetFromUrl(url(), key, 1000 * 60 * 10);
             }
             res.send(data);
         },
@@ -71,7 +71,7 @@ const dl = (() => {
             }).catch(err => {
                 console.error(err);
             });
-        }
+        },
     };
 })();
 

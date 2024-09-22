@@ -4,9 +4,9 @@ const config = require('./config/redis.json');
 
 const client = redis.createClient({
     host: config.host,
-    retry_strategy: function (options) {
+    retry_strategy: function () {
         return new Error('shit');
-    }
+    },
 });
 
 client.on('error', function (err) {
@@ -20,8 +20,8 @@ const args = require('minimist')(process.argv.slice(2), {
         n: 'name',
         p: 'password',
         r: 'role',
-        s: 'salt-rounds'
-    }
+        s: 'salt-rounds',
+    },
 });
 
 if (args.h) {
