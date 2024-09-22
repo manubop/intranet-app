@@ -1,0 +1,152 @@
+#mySidebar {
+    width: 240px;
+}
+
+.with-sidebar {
+    margin-left: 240px;
+}
+
+#main {
+    overflow-y: auto;
+    height: calc(100vh - 40.5px);
+}
+
+#totalItems {
+    font-weight: bold;
+}
+
+#result {
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+#result td {
+    max-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#result td:first-child, 
+#result th:first-child {
+    padding-left: 8px !important;
+}
+
+#result tbody td:hover, #result thead th {
+    cursor: pointer;
+}
+
+#result tbody tr:hover {
+    background-color: #ccc;
+}
+
+#result td.date, td.time {
+    text-align: center !important;
+}
+
+#result thead input[type="text"] {
+    width: 100%; 
+    box-sizing: border-box;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing: border-box;
+}
+
+#result th:nth-child(1) {
+    width: 10%;
+}
+
+#result th:nth-child(2) {
+    width: 5%;
+}
+
+#result th:nth-child(3) {
+    width: 5%;
+}
+
+#result th:nth-child(4) {
+    width: 20%;
+}
+
+#result th:nth-child(5) {
+    width: 40%;
+}
+
+form.login {
+    display: flex;
+    flex-direction: column;
+}
+
+form.login input {
+    margin: 8px 0;
+}
+
+.center-on-screen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.no-select {
+    -webkit-user-select: none; /* Safari 3.1+ */
+    -moz-user-select: none; /* Firefox 2+ */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Standard syntax */
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    max-height: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.info-head,
+.close {
+    font-size: 35px;
+    font-weight: bold;
+    min-height: 52px;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+    cursor: pointer;
+}
+
+#infoContent {
+    overflow: auto;
+}
+
+@media screen and (max-width: 601px) {
+
+    #main {
+        height: calc(100vh - 117.5px);
+    }
+
+    .with-sidebar {
+        margin-left: 0px;
+    }
+
+    #result th:nth-child(1) {
+        width: 20%;
+    }
+
+    #result th:nth-child(2) {
+        width: 80%;
+    }
+
+    .modal-content {
+        margin: auto;
+        width: 80%;
+        height: 80%;
+    }    
+}

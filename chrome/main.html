@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src * self 'unsafe-inline' 'wasm-unsafe-eval' blob: data: gap:;"> -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Hello World! Site Title</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
+    <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+    <script src="scripts/jquery-3.6.0.min.js"></script>
+    <script src="scripts/jquery-ui-1.12.1.js"></script>
+    <script src="scripts/dexie.js"></script>
+    <script src="scripts/index.js"></script>
+  </head>
+  <body>
+    <div class="w3-bar w3-border w3-light-grey">
+      <!-- <a href="#" class="w3-bar-item w3-button w3-mobile" id="openNav" onclick="w3_toggle()">☰</span> -->
+      <a href="#" class="w3-bar-item w3-button w3-mobile nav" did="home">Home</a>
+      <a href="#" class="w3-bar-item w3-button w3-mobile nav" did="admin" disabled>Admin</a>
+      <a href="/logout" class="w3-bar-item w3-button w3-mobile w3-right">Logout</a>
+    </div>
+    <div class="w3-sidebar w3-light-grey w3-card-4 w3-animate-left w3-hide" id="mySidebar">
+      <!-- <div class="w3-bar w3-dark-grey">
+        <span class="w3-bar-item w3-padding-16">Menu</span>
+        <button onclick="w3_close()" class="w3-bar-item w3-button w3-right w3-padding-16" title="close Sidebar">×</button>
+      </div> -->
+      <button class="w3-bar-item w3-button w3-right w3-padding" id="closeSidebar" title="Close Sidebar">&times;</button>
+      <div class="w3-bar-block">
+        <button class="w3-bar-item w3-button w3-left-align" id="searchBarItem">Search <i class="fa fa-caret-down"></i></button>
+        <form id="searchAccordion" class="w3-container w3-hide w3-white w3-card-4">
+          <label for="ul">UL</label>
+          <select class="w3-input w3-border" id="ul">
+            <option value="974">Poissy</option>
+            <option value="969">Mantes</option>
+          </select>
+          <label for="nivol">Nom</label>
+          <select class="w3-input w3-border" id="nivol"></select>
+          <label for="debut">Début</label>
+          <input class="w3-input w3-border datepicker" type="text" id="debut" value="2019-01-01">
+          <label for="nivol">Fin</label>
+          <input class="w3-input w3-border datepicker" type="text" id="fin" value="2019-12-31">
+          <a class="w3-button w3-green w3-margin-top w3-margin-bottom" id="fetch">Fetch</a>
+        </form>        
+        <button class="w3-bar-item w3-button w3-block w3-left-align" id="copyTable">Copy</buntton>
+      </div>
+    </div>
+    <div class="w3-container w3-display-container">
+      <span class="w3-button w3-transparent w3-display-topleft w3-xlarge" title="Toggle Sidebar" id="toggleSidebar">&raquo;</span>
+    </div>
+    <div id="main">
+      <div class="tab" id="home">
+        <div class="w3-panel w3-responsive">
+          <table class="w3-table" id="result">
+            <thead>
+              <tr class="no-select">
+                <th class="w3-center" title="Date">Date</th>
+                <th class="w3-center w3-hide-small w3-hide-medium" title="Début">Début</th>
+                <th class="w3-center w3-hide-small w3-hide-medium" title="Durée">Durée</th>
+                <th class="w3-hide-small" title="Type">Type</th>
+                <th title="Nom">Nom</th>
+                <th class="w3-hide-small" title="Structure">Structure</th>
+              </tr>
+              <tr>
+                <td><input class="w3-input w3-border" type="text"></td>
+                <td class="w3-hide-small w3-hide-medium"><input class="w3-input w3-border" type="text"></td>
+                <td class="w3-hide-small w3-hide-medium"><input class="w3-input w3-border" type="text"></td>
+                <td class="w3-hide-small"><input class="w3-input w3-border" type="text"></td>
+                <td><input class="w3-input w3-border" type="text"></td>
+                <td class="w3-hide-small"><input class="w3-input w3-border" type="text"></td>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div id="status">
+            <span>fetching...</span><br>
+            <span id="activites"></span><br>
+            <span id="structures"></span>
+          </div>
+          <span id="totalItems"></span>
+        </div>
+        <div class="w3-overlay" id="info">
+          <div class="w3-container w3-white modal-content">
+            <div class="w3-bar info-head">
+              <div class="w3-left">Info</div>
+              <div class="w3-right close" id="closeInfo">&times;</div>
+            </div>
+            <div class="w3-panel" id="infoContent"></div>
+          </div>
+        </div>
+      </div>
+      <div class="w3-hide tab" id="admin"></div>
+    </div>
+  </body>
+</html>

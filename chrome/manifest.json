@@ -1,0 +1,30 @@
+{
+  "name": "Pegass Wrapper",
+  "description": "Pegass wrapper",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_icon": {
+      "16": "images/icon16.png",
+      "24": "images/icon24.png",
+      "32": "images/icon32.png"
+    },
+    "default_title": "Click Me"
+  },
+  "permissions": [
+    "tabs", "activeTab"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "https://pegass.croix-rouge.fr/*",
+    "https://ajax.googleapis.com/*",
+    "https://code.jquery.com/*"
+  ],
+  "content_security_policy": {
+    // "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' https://pegass.croix-rouge.fr https://ajax.googleapis.com https://code.jquery.com;"
+    // "extension_pages": "script-src 'self' 'wasm-unsafe-eval' http://localhost:* http://127.0.0.1:*; object-src 'self'; script-src-elem 'self' https://pegass.croix-rouge.fr https://ajax.googleapis.com https://code.jquery.com;"
+    // "extension_pages": "script-src 'self'; script-src-elem 'self' https://ajax.googleapis.com/"
+  }
+}
